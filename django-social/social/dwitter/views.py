@@ -16,11 +16,7 @@ def dashboard(request):
         user__profile__in=request.user.profile.follows.all()
     ).order_by("-created_at")
 
-    return render(
-        request,
-        "dwitter/dashboard.html",
-        {"form": form, "dweets": followed_dweets},
-    )
+    return render(request,"dwitter/dashboard.html", {"form": form, "dweets": followed_dweets},)
 
 
 def profile_list(request):
@@ -31,6 +27,7 @@ def profile_list(request):
 def profile(request, pk):
     profile = Profile.objects.get(pk=pk)
     if request.method == "POST":
+        Profile.objects.get_or_create(user=request.user)
         current_user_profile = request.user.profile
         data = request.POST
         action = data.get("follow")
@@ -38,5 +35,10 @@ def profile(request, pk):
             current_user_profile.follows.add(profile)
         elif action == "unfollow":
             current_user_profile.follows.remove(profile)
-        current_user_profile.save()
+            current_user_profile.save()
     return render(request, "dwitter/profile.html", {"profile": profile})
+
+
+
+def bashboard(request):
+    return render(request, "dwitter/bashboard.html")
